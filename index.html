@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <title>Buntes Glücksrad</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -30,12 +32,20 @@
     }
 
     @media (max-width: 800px) {
-      .app { flex-direction: column; align-items: center; }
+      .app {
+        flex-direction: column;
+        align-items: center;
+      }
     }
 
-    .left, .right { flex: 1; }
+    .left, .right {
+      flex: 1;
+    }
 
-    h1 { margin: 0 0 4px; font-size: 1.8rem; }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.8rem;
+    }
 
     .subtitle {
       margin-bottom: 16px;
@@ -51,8 +61,14 @@
       padding-top: 20px;
     }
 
-    #wheel { border-radius: 50%; background: #fff; }
+    #wheel {
+      border-radius: 50%;
+      max-width: 100%;
+      height: auto;
+      background: #fff;
+    }
 
+    /* Pfeil – Spitze nach unten aufs Rad */
     .pointer {
       position: absolute;
       top: 8px;
@@ -62,8 +78,16 @@
       height: 0;
       border-left: 18px solid transparent;
       border-right: 18px solid transparent;
-      border-top: 30px solid #ff3366;
+      border-top: 30px solid #ff3366; /* Spitze nach unten */
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
       z-index: 10;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
     }
 
     textarea {
@@ -74,181 +98,608 @@
       border-radius: 10px;
       border: 1px solid #ccc;
       font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #777;
+      margin: 4px 0 10px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 10px;
     }
 
     button {
       border: none;
       border-radius: 999px;
       padding: 8px 16px;
+      font-size: 0.9rem;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+      white-space: nowrap;
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: none;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #ff5f6d, #ffc371);
       color: #fff;
+      box-shadow: 0 6px 16px rgba(255, 95, 109, 0.4);
       font-weight: 600;
     }
 
-    .btn-secondary { background: #f2f2f7; }
-    .btn-ghost { background: transparent; border: 1px solid #ddd; }
+    .btn-primary:disabled {
+      background: #ccc;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
 
+    .btn-secondary {
+      background: #f2f2f7;
+      color: #333;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #ddd;
+      color: #555;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 6px;
+      min-height: 1.2em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #eef8ff;
+      color: #246;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+    }
+
+    .option-row {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #444;
+    }
+
+    .option-row input {
+      margin-right: 6px;
+    }
+
+    /* Winner Modal */
     .winner-modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 1000000; /* unter Konfetti-Canvas */
     }
 
-    .winner-modal.show { display: flex; }
+    .winner-modal.show {
+      display: flex;
+    }
 
     .winner-card {
-      background: #fff;
-      padding: 24px;
-      border-radius: 20px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px 28px;
       text-align: center;
+      max-width: 360px;
+      width: 90%;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.25);
+      animation: pop 0.4s ease-out;
     }
 
+    @keyframes pop {
+      0%   { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .winner-title {
+      font-size: 1.1rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .winner-name {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      background: linear-gradient(120deg, #ff3366, #ffcc00, #33ccff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .winner-sub {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 16px;
+    }
+
+    .btn-close {
+      margin-top: 4px;
+    }
+
+    /* Konfetti-Canvas ganz vorne */
     #confettiCanvas {
       position: fixed;
       inset: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      z-index: 2000;
+      z-index: 2000000;
     }
   </style>
 </head>
-
 <body>
-<div class="app">
-  <div class="left">
-    <h1>Glücksrad Moderationsübergabe</h1>
-    <div class="subtitle">Namen eintragen, speichern und drehen</div>
-    <div class="wheel-container">
-      <div class="pointer"></div>
-      <canvas id="wheel" width="420" height="420"></canvas>
+  <div class="app">
+    <div class="left">
+      <h1>Glücksrad Moderationsübergabe</h1>
+      <div class="subtitle">Namen eintragen, speichern und drehen</div>
+      <div class="wheel-container">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="420" height="420"></canvas>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="badge">💾 Speichert automatisch in deinem Browser</div>
+
+      <label for="names">Namen (je Zeile ein Name):</label>
+      <textarea id="names" placeholder="Max&#10;Anna&#10;Sven&#10;..."></textarea>
+
+      <div class="option-row">
+        <label>
+          <input type="checkbox" id="removeWinnerCheckbox" />
+          Gewinner nach dem Drehen aus der Liste entfernen
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button id="updateWheelBtn" class="btn-secondary" type="button">Rad aktualisieren</button>
+        <button id="saveBtn" class="btn-secondary" type="button">Namen speichern</button>
+        <button id="loadBtn" class="btn-ghost" type="button">Gespeicherte laden</button>
+        <button id="clearBtn" class="btn-ghost" type="button">Liste leeren</button>
+      </div>
+
+      <div class="button-row">
+        <button id="spinBtn" class="btn-primary" type="button">
+          🎡 Drehen
+        </button>
+      </div>
+
+      <div class="status" id="statusText"></div>
     </div>
   </div>
 
-  <div class="right">
-    <textarea id="names"></textarea><br><br>
-    <label><input type="checkbox" id="removeWinnerCheckbox"> Gewinner entfernen</label><br><br>
+  <!-- Konfetti-Canvas ganz vorne -->
+  <canvas id="confettiCanvas"></canvas>
 
-    <button class="btn-secondary" id="updateWheelBtn">Rad aktualisieren</button>
-    <button class="btn-secondary" id="saveBtn">Speichern</button>
-    <button class="btn-primary" id="spinBtn">🎡 Drehen</button>
-  </div>
-</div>
+  <!-- Konfetti-Bibliothek -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
 
-<canvas id="confettiCanvas"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
+  <script>
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
 
-<script>
-  const canvas = document.getElementById('wheel');
-  const ctx = canvas.getContext('2d');
+    const namesTextarea = document.getElementById('names');
+    const updateWheelBtn = document.getElementById('updateWheelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const loadBtn = document.getElementById('loadBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const spinBtn = document.getElementById('spinBtn');
+    const statusText = document.getElementById('statusText');
+    const removeWinnerCheckbox = document.getElementById('removeWinnerCheckbox');
 
-  const namesTextarea = document.getElementById('names');
-  const spinBtn = document.getElementById('spinBtn');
-  const removeWinnerCheckbox = document.getElementById('removeWinnerCheckbox');
+    const STORAGE_KEY = 'gluecksrad_namen_v5';
 
-  let names = ['Jurek','Kai','Finn','André','Jan','Benjamin','Nina','Saskia'];
-  let rotation = 0;
-  let speed = 0;
-  let spinning = false;
+    let names = ['Jurek', 'Kai', 'Finn', 'André','Jan','Benjamin','Isi','Nina','Saskia'];
+    let rotation = 0;       // aktuelle Rotation in Radiant
+    let spinVelocity = 0;   // Drehgeschwindigkeit
+    let isSpinning = false;
 
-  // ==============================
-  // 🔒 VERSTECKTE GEWINNGEWICHTE
-  // ==============================
-  const nameWeights = {
-    'Jurek': 3,
-    'Benjamin': 2,
-    'Nina': 1,
-    'Saskia': 1
-  };
-  // nicht genannte Namen => Gewicht 1
+    // ==========================================================
+    // VERSTECKTE WAHRSCHEINLICHKEITEN (nicht in der UI sichtbar)
+    // Standardgewicht = 1, höher = öfter gewinnen
+    // ==========================================================
+    const nameWeights = {
+      // Beispiel:
+      // 'Benjamin': 3,
+      // 'Nina': 2,
+      // 'Jurek': 1
+    };
 
-  function getWeightedWinnerIndex() {
-    const weights = names.map(n => nameWeights[n] ?? 1);
-    const total = weights.reduce((a,b) => a+b, 0);
-    let rnd = Math.random() * total;
+    // Physik-Parameter wie vorher (Look bleibt gleich)
+    const FRICTION = 0.985;
+    const STOP_VELOCITY = 0.002;
 
-    for (let i = 0; i < weights.length; i++) {
-      rnd -= weights[i];
-      if (rnd <= 0) return i;
-    }
-    return 0;
-  }
+    // Für den aktuellen Spin merken wir Ziel & Gewinner
+    let targetRotation = 0;
+    let plannedWinnerIndex = -1;
 
-  function drawWheel() {
-    ctx.clearRect(0,0,420,420);
-    const slice = Math.PI * 2 / names.length;
+    // ---------- Konfetti (Vordergrund) ----------
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const confettiInstance = confetti.create(confettiCanvas, {
+      resize: true,
+      useWorker: true
+    });
 
-    ctx.save();
-    ctx.translate(210,210);
-    for (let i=0;i<names.length;i++) {
-      ctx.beginPath();
-      ctx.fillStyle = `hsl(${i/names.length*360},80%,55%)`;
-      ctx.moveTo(0,0);
-      ctx.arc(0,0,190,rotation+i*slice,rotation+(i+1)*slice);
-      ctx.fill();
+    function fireConfetti() {
+      const duration = 1200;
+      const end = Date.now() + duration;
 
-      ctx.rotate(slice/2);
-      ctx.textAlign="right";
-      ctx.fillStyle="#fff";
-      ctx.font="16px system-ui";
-      ctx.fillText(names[i],180,5);
-      ctx.rotate(-slice/2);
-    }
-    ctx.restore();
-  }
-
-  function spin() {
-    if (spinning) return;
-    spinning = true;
-    speed = 0.3 + Math.random()*0.3;
-
-    function anim() {
-      rotation += speed;
-      speed *= 0.985;
-      drawWheel();
-
-      if (speed < 0.003) {
-        spinning = false;
-        const index = getWeightedWinnerIndex();
-        const winner = names[index];
-
-        alert('Gewinner: ' + winner);
-
-        if (removeWinnerCheckbox.checked) {
-          names.splice(index,1);
-          namesTextarea.value = names.join('\n');
+      (function frame() {
+        confettiInstance({
+          particleCount: 40,
+          spread: 60,
+          origin: { x: Math.random(), y: 0.2 },
+          scalar: 0.9
+        });
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
         }
+      })();
+    }
 
-        drawWheel();
+    // ---------- Hilfsfunktionen Namen ----------
+    function parseNamesFromTextarea() {
+      return namesTextarea.value
+        .split('\n')
+        .map(n => n.trim())
+        .filter(n => n.length > 0);
+    }
+
+    function updateNamesFromTextarea() {
+      const currentNames = parseNamesFromTextarea();
+      if (currentNames.length === 0) {
+        statusText.textContent = 'Bitte trage mindestens einen Namen ein.';
+        names = [];
+      } else {
+        names = currentNames;
+        statusText.textContent = 'Rad aktualisiert mit ' + names.length + ' Namen.';
+      }
+      rotation = 0;
+      drawWheel();
+      updateSpinButtonState();
+    }
+
+    function saveNames() {
+      const currentNames = parseNamesFromTextarea();
+      if (currentNames.length === 0) {
+        statusText.textContent = 'Keine Namen zum Speichern gefunden.';
         return;
       }
-      requestAnimationFrame(anim);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentNames));
+      statusText.textContent = 'Namen gespeichert ✅';
     }
-    anim();
-  }
 
-  document.getElementById('updateWheelBtn').onclick = () => {
-    names = namesTextarea.value.split('\n').map(n=>n.trim()).filter(Boolean);
-    drawWheel();
-  };
+    function loadNames() {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (!data) {
+        statusText.textContent = 'Keine gespeicherten Namen gefunden.';
+        return;
+      }
+      try {
+        const loaded = JSON.parse(data);
+        if (Array.isArray(loaded) && loaded.length > 0) {
+          names = loaded;
+          namesTextarea.value = loaded.join('\n');
+          rotation = 0;
+          drawWheel();
+          updateSpinButtonState();
+          statusText.textContent = 'Gespeicherte Namen geladen.';
+        } else {
+          statusText.textContent = 'Gespeicherte Daten sind leer oder ungültig.';
+        }
+      } catch (e) {
+        console.error(e);
+        statusText.textContent = 'Fehler beim Laden der Namen.';
+      }
+    }
 
-  document.getElementById('saveBtn').onclick = () =>
-    localStorage.setItem('rad', JSON.stringify(names));
+    function updateSpinButtonState() {
+      spinBtn.disabled = names.length === 0 || isSpinning;
+    }
 
-  spinBtn.onclick = spin;
+    // ---------- Zeichnen des Rades ----------
+    function randomBrightColor(index, total) {
+      const hue = (index / total) * 360;
+      return `hsl(${hue}, 80%, 55%)`;
+    }
 
-  // init
-  const saved = JSON.parse(localStorage.getItem('rad')||'null');
-  if (saved) names = saved;
-  namesTextarea.value = names.join('\n');
-  drawWheel();
-</script>
+    function drawWheel() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = Math.min(w, h) / 2 - 10;
+
+      ctx.clearRect(0, 0, w, h);
+
+      if (names.length === 0) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#bbb';
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 22px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Keine Namen', 0, 0);
+        ctx.restore();
+        return;
+      }
+
+      const sliceAngle = (Math.PI * 2) / names.length;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      rotation = rotation % (Math.PI * 2);
+
+      for (let i = 0; i < names.length; i++) {
+        const startAngle = -Math.PI / 2 + rotation + i * sliceAngle;
+        const endAngle = startAngle + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, startAngle, endAngle, false);
+        ctx.closePath();
+        ctx.fillStyle = randomBrightColor(i, names.length);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        const midAngle = startAngle + sliceAngle / 2;
+        ctx.save();
+        ctx.rotate(midAngle);
+        ctx.translate(radius * 0.65, 0);
+        ctx.rotate(Math.PI / 2);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        let name = names[i];
+        if (name.length > 16) name = name.slice(0, 13) + '…';
+        ctx.fillText(name, 0, 0);
+
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.12, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // ---------- Gewichtete Gewinnerwahl (unsichtbar) ----------
+    function getWeightForName(name) {
+      const w = nameWeights[name];
+      return (typeof w === 'number' && isFinite(w) && w > 0) ? w : 1;
+    }
+
+    function getWeightedWinningIndex() {
+      if (names.length === 0) return -1;
+      const weights = names.map(getWeightForName);
+      const total = weights.reduce((a, b) => a + b, 0);
+
+      let rnd = Math.random() * total;
+      for (let i = 0; i < weights.length; i++) {
+        rnd -= weights[i];
+        if (rnd <= 0) return i;
+      }
+      return weights.length - 1;
+    }
+
+    // Zielrotation so berechnen, dass der Zeiger exakt auf dem Slice-Mittel landet
+    function computeTargetRotationForIndex(targetIndex) {
+      const twoPi = Math.PI * 2;
+      const sliceAngle = twoPi / names.length;
+
+      const centerInSlice = (targetIndex + 0.5) * sliceAngle;
+
+      // getWinningIndex-Logik implizit: index = floor(((-rot mod 2pi) / sliceAngle))
+      // => (-rot mod 2pi) = centerInSlice  => rot = 2pi - centerInSlice (mod 2pi)
+      let targetNorm = (twoPi - centerInSlice) % twoPi;
+      if (targetNorm < 0) targetNorm += twoPi;
+
+      let currentNorm = rotation % twoPi;
+      if (currentNorm < 0) currentNorm += twoPi;
+
+      const extraSpins = 6 + Math.floor(Math.random() * 4); // 6..9 Vollrunden wie "normal"
+      const forwardDelta = ((targetNorm - currentNorm + twoPi) % twoPi) + extraSpins * twoPi;
+
+      return rotation + forwardDelta;
+    }
+
+    // Wie weit dreht das Rad bei Startgeschwindigkeit v0 bis zum STOP?
+    function totalDeltaForV0(v0) {
+      if (v0 <= STOP_VELOCITY) return v0;
+
+      // Anzahl Frames bis v0 * FRICTION^N < STOP
+      const N = Math.ceil(Math.log(STOP_VELOCITY / v0) / Math.log(FRICTION));
+      const n = Math.max(0, N);
+
+      // Summe geometrische Reihe: v0*(1 - f^(n+1)) / (1 - f)
+      return v0 * (1 - Math.pow(FRICTION, n + 1)) / (1 - FRICTION);
+    }
+
+    // v0 so bestimmen, dass die Physikdrehung genau beim targetRotation endet
+    function solveInitialVelocity(desiredDelta) {
+      // Untergrenze knapp über STOP, Obergrenze dynamisch erhöhen
+      let lo = STOP_VELOCITY * 1.01;
+      let hi = 0.6; // Startwert ähnlich "wie früher"
+
+      while (totalDeltaForV0(hi) < desiredDelta && hi < 6) {
+        hi *= 1.5;
+      }
+
+      // Fallback, falls desiredDelta extrem groß wäre (sollte mit extraSpins selten passieren)
+      if (totalDeltaForV0(hi) < desiredDelta) return hi;
+
+      for (let i = 0; i < 40; i++) {
+        const mid = (lo + hi) / 2;
+        const d = totalDeltaForV0(mid);
+        if (d < desiredDelta) lo = mid; else hi = mid;
+      }
+      return (lo + hi) / 2;
+    }
+
+    // ---------- Winner-Modal ----------
+    const modal = document.createElement('div');
+    modal.className = 'winner-modal';
+    modal.innerHTML = `
+      <div class="winner-card">
+        <div class="winner-title">Gewinner/in</div>
+        <div class="winner-name" id="winnerName">–</div>
+        <div class="winner-sub">Herzlichen Glückwunsch! 🎉</div>
+        <button class="btn-secondary btn-close" type="button">Schließen</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    const winnerNameSpan = modal.querySelector('#winnerName');
+    const closeBtn = modal.querySelector('.btn-close');
+
+    function showWinner(name) {
+      winnerNameSpan.textContent = name || '–';
+      modal.classList.add('show');
+      fireConfetti();
+    }
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('show');
+    });
+
+    // ---------- Animation / Drehung (Optik wie vorher) ----------
+    function animateSpin() {
+      if (!isSpinning) return;
+
+      rotation += spinVelocity;
+      spinVelocity *= FRICTION;
+
+      drawWheel();
+
+      if (spinVelocity < STOP_VELOCITY) {
+        isSpinning = false;
+
+        // exakt auf Ziel setzen (nur Mini-Snap, weil v0 passend berechnet wurde)
+        rotation = targetRotation;
+        drawWheel();
+
+        const winner = (plannedWinnerIndex >= 0 && plannedWinnerIndex < names.length)
+          ? names[plannedWinnerIndex]
+          : '–';
+
+        if (removeWinnerCheckbox.checked && plannedWinnerIndex >= 0 && names.length > 0) {
+          names.splice(plannedWinnerIndex, 1);
+          namesTextarea.value = names.join('\n');
+          drawWheel();
+        }
+
+        statusText.textContent = 'Gewinner/in: ' + winner;
+        showWinner(winner);
+        updateSpinButtonState();
+        return;
+      }
+
+      requestAnimationFrame(animateSpin);
+    }
+
+    function startSpin() {
+      if (isSpinning) return;
+      if (names.length === 0) {
+        statusText.textContent = 'Bitte zuerst Namen eintragen.';
+        return;
+      }
+
+      plannedWinnerIndex = getWeightedWinningIndex();
+      targetRotation = computeTargetRotationForIndex(plannedWinnerIndex);
+
+      const desiredDelta = targetRotation - rotation;
+      spinVelocity = solveInitialVelocity(desiredDelta);
+
+      isSpinning = true;
+      statusText.textContent = 'Das Rad dreht...';
+      updateSpinButtonState();
+      animateSpin();
+    }
+
+    // ---------- Events ----------
+    updateWheelBtn.addEventListener('click', updateNamesFromTextarea);
+    saveBtn.addEventListener('click', saveNames);
+    loadBtn.addEventListener('click', loadNames);
+    clearBtn.addEventListener('click', () => {
+      namesTextarea.value = '';
+      names = [];
+      rotation = 0;
+      drawWheel();
+      updateSpinButtonState();
+      statusText.textContent = 'Liste geleert.';
+    });
+    spinBtn.addEventListener('click', startSpin);
+
+    namesTextarea.addEventListener('input', () => {
+      statusText.textContent = '';
+    });
+
+    // ---------- Initialisierung ----------
+    (function init() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const loaded = JSON.parse(saved);
+          if (Array.isArray(loaded) && loaded.length > 0) {
+            names = loaded;
+            namesTextarea.value = loaded.join('\n');
+            statusText.textContent = 'Gespeicherte Namen automatisch geladen.';
+          }
+        } catch (e) {
+          console.warn('Konnte gespeicherte Namen nicht lesen:', e);
+        }
+      } else {
+        namesTextarea.value = names.join('\n');
+      }
+      updateSpinButtonState();
+      drawWheel();
+    })();
+  </script>
 </body>
 </html>
 ``
