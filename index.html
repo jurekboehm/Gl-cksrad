@@ -315,14 +315,16 @@
 
     const STORAGE_KEY = 'gluecksrad_namen_v5';
 
-    let names = ['Jurek', 'Kai', 'Finn', 'André','Jan','Benjamin','Nina','Saskia'];
+    let names = ['Jurek', 'Kai', 'Finn', 'André','Jan','Benjamin','Nina','Saskia','Janina'];
     let rotation = 0;       // aktuelle Rotation in Radiant
     let spinVelocity = 0;   // Drehgeschwindigkeit
     let isSpinning = false;
 
     const nameWeights = {
-      'Jan': 3,
-      'Kai': 3
+      'Jan': 2,
+      'Kai': 2,
+      'Finn': 2,
+      'André': 2,
     };
 
     // Physik-Parameter wie vorher (Look bleibt gleich)
